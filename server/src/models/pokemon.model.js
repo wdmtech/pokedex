@@ -41,6 +41,11 @@ module.exports = function (app) {
     evolutions: {
       required: false,
       type: String,
+    },
+    // Image
+    image: {
+      required: false,
+      type: String,
     }
   }, {
     timestamps: true
