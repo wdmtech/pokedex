@@ -11,15 +11,16 @@ module.exports = function (app) {
     name: {
       required: true,
       type: String,
-      default: 'An unknown pokémon',
+      unique: true,
+      default: 'An unknown Pokémon',
       validate: [
-        val => (val.length <= 4 && val.length <= 24),
+        val => (val.length >= 4 && val.length <= 24),
         'Uh oh, the {PATH} of this Pokémon should be a single word between 4 and 24 characters.'
       ],
     },
     // Brief description (mandatory: minimum 30 characters)
     description: {
-      required: false,
+      required: true,
       type: String,
       default: 'Not much is known about this Pokémon yet!',
       validate: [
