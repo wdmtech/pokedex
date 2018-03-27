@@ -1,0 +1,91 @@
+// OTHER LIBS
+
+// docs | https://fontawesome.com/cheatsheet
+$fa-font-path: "~font-awesome/fonts"
+@import '~font-awesome/scss/font-awesome.scss'
+
+// docs | https://daneden.github.io/animate.css/
+@import "~animate.css"
+
+// BULMA
+
+// docs | https://bulma.io/documentation/overview/customize
+
+// 1. Import the initial variables
+@import "~bulma/sass/utilities/initial-variables"
+@import "~bulma/sass/utilities/functions"
+
+// 2. Set initial variables
+$desktop: 700px
+$primary: #e94800
+$link: $primary
+$tabs-link-active-border-bottom-color: $primary
+$tabs-link-active-color: $primary
+$section-padding: 1rem 1.5rem
+
+// 3. Set derived variables
+$danger: $orange
+
+// 4. Setup Custom Colors
+$linkedin: #0077b5
+$linkedin-invert: findColorInvert($linkedin)
+$twitter: #55acee
+$twitter-invert: findColorInvert($twitter)
+$github: #333
+$github-invert: findColorInvert($github)
+
+$button-disabled-opacity: 0.8
+
+// 6. Import the rest of Bulma
+@import "~bulma/bulma"
+
+// Import Bulma extensions
+@import '~bulma-tooltip'
+
+// COMMON UTIL CLASSES
+
+progress[value]
+  /* Reset the default appearance */
+  -webkit-appearance: none
+  appearance: none
+  height: 10px
+
+progress::-webkit-progress-bar
+  height: 10px
+  border-radius: 15px
+  background-color: #d1d1d1
+
+progress::-webkit-progress-inner-element
+  height: 10px
+  border-radius: 15px
+
+progress[value]::-webkit-progress-value
+  background-color: $primary
+  border-radius: 15px 15px 15px 15px
+  height: 10px
+  transition : width 1s ease-in-out
+
+.primary
+  color: $primary !important
+
+.muted
+  opacity: .5
+
+.censored
+  filter: blur(3px)
+
+.button[disabled]
+  opacity: .5 !important
+
+.pointer
+  cursor: pointer
+
+.help
+  cursor: help
+
+.is-active
+  -webkit-transition: background .5s
+  -moz-transition: background .5s
+  -ms-transition: background .5s
+  -o-transition: background .5s
+  transition: background .5s
