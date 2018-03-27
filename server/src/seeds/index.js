@@ -5,7 +5,7 @@ module.exports = async function(app) {
     FLYING: 'flying',
     WATER: 'water',
     PLANT: 'plant',
-    POISON: 'poson',
+    POISON: 'poison',
     ICE: 'ice',
     PSYCHIC: 'psychic',
   }
@@ -26,13 +26,14 @@ module.exports = async function(app) {
   ]
 
   try {
+
     let result = await this.service('pokemon').create(pokemon)
 
     console.log(result)
+
   } catch (e) {
+
     console.error(e)
   }
-
-
 
 }
