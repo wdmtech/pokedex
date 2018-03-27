@@ -11,14 +11,20 @@
     "build": "node build/build.js"
   },
   "dependencies": {
+    "@feathersjs/authentication-client": "^1.0.2",
+    "@feathersjs/feathers": "^3.1.4",
+    "@feathersjs/socketio-client": "^1.1.0",
     "animate.css": "^3.6.1",
     "bulma": "^0.6.2",
     "bulma-tooltip": "^1.0.3",
+    "feathers-vuex": "^1.1.4",
     "font-awesome": "^4.7.0",
     "node-sass": "^4.8.3",
     "sass-loader": "^6.0.7",
+    "socket.io-client": "^2.0.4",
     "vue": "^2.5.2",
-    "vue-router": "^3.0.1"
+    "vue-router": "^3.0.1",
+    "vuex": "^3.0.1"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",
