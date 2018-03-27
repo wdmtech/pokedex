@@ -18,6 +18,8 @@ const channels = require('./channels');
 
 const mongoose = require('./mongoose');
 
+const seeds = require('./seeds');
+
 const app = express(feathers());
 
 // Load app configuration
@@ -44,6 +46,8 @@ app.configure(middleware);
 app.configure(services);
 // Set up event channels (see channels.js)
 app.configure(channels);
+
+app.configure(seeds);
 
 // Configure a middleware for 404s and the error handler
 app.use(express.notFound());
