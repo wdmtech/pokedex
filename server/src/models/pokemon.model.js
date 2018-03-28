@@ -7,7 +7,7 @@ module.exports = function (app) {
   const mongooseClient = app.get('mongooseClient');
   const { Schema } = mongooseClient;
   const pokemon = new Schema({
-    // The name (mandatory: a single word between 4 and 24 characters)
+    // The name (mandatory: a single (unique) word between 4 and 24 characters)
     name: {
       required: true,
       type: String,
@@ -28,13 +28,22 @@ module.exports = function (app) {
         'Uh oh, the {PATH} of this Pokémon should be a minimum of 30 characters.'
       ],
     },
-    // Type(s): a Pokémon has a maximum of two types and at least one (see schema definition in #1 )
+    // Type(s): a Pokémon has a maximum of two types (see schema definition in #1 )
     types: {
       required: false,
       type: [String],
       validate: [
         val => (val.length <= 2 && val.length > 1),
         'Uh oh, this Pókemon should have a maximum of two types and at least one type.'
+      ],
+    },
+    // Weakness(es): a Pokémon has at least one weakness (see schema definition in #1 )
+    weakness: {
+      required: false,
+      type: [String],
+      validate: [
+        val => (val.length <= 2 && val.length > 1),
+        'Uh oh, this Pókemon should have at least one {PATH}. No Pokémon is undefeatable!'
       ],
     },
     // Evolutions: Pokémon into which it evolves (optional, eg: bellsprout evolves in weepinbell)
@@ -46,6 +55,11 @@ module.exports = function (app) {
     image: {
       required: false,
       type: String,
+    },
+    // Favourite
+    favourite: {
+      required: false,
+      type: Boolean,
     }
   }, {
     timestamps: true
