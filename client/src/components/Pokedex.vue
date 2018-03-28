@@ -7,10 +7,12 @@
       The ultimate Pokémon manager
     </h2>
 
-    <pokemon v-for="pokemon in listPokemon"
-             :pokemon="pokemon"
-             :key="pokemon._id">
-    </pokemon>
+    <div class="columns is-multiline">
+      <pokemon v-for="pokemon in listPokemon"
+               :pokemon="pokemon"
+               :key="pokemon._id">
+      </pokemon>
+    </div>
 
   </div>
 </template>
