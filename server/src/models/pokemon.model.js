@@ -30,19 +30,19 @@ module.exports = function (app) {
     },
     // Type(s): a Pokémon has a maximum of two types (see schema definition in #1 )
     types: {
-      required: false,
+      required: true,
       type: [String],
       validate: [
         val => (val.length <= 2 && val.length > 1),
-        'Uh oh, this Pókemon should have a maximum of two types and at least one type.'
+        'Uh oh, this Pókemon should have at least one, with a maximum of two types. (e.g. Fire, Poison)'
       ],
     },
     // Weakness(es): a Pokémon has at least one weakness (see schema definition in #1 )
-    weakness: {
-      required: false,
+    weaknesses: {
+      required: true,
       type: [String],
       validate: [
-        val => (val.length <= 2 && val.length > 1),
+        val => (val.length <= 1),
         'Uh oh, this Pókemon should have at least one {PATH}. No Pokémon is undefeatable!'
       ],
     },
