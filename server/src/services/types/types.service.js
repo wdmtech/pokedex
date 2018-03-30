@@ -5,12 +5,10 @@ const hooks = require('./types.hooks');
 
 module.exports = function (app) {
   const Model = createModel(app);
-  const paginate = app.get('paginate');
 
   const options = {
     name: 'types',
     Model,
-    paginate
   };
 
   // Initialize our service with any options it requires
