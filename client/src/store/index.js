@@ -9,6 +9,7 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   plugins: [
-    service('pokemon')
+    service('pokemon'),
+    service('types')
   ]
 })
