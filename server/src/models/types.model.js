@@ -10,10 +10,12 @@ module.exports = function (app) {
       required: true,
       unique: true,
       type: String,
+    },
+    color: {
+      required: false,
+      type: String,
     }
-  }, {
-    timestamps: true
-  });
+  }, {});
 
   return mongooseClient.model('types', types);
 };
