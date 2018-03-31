@@ -6,6 +6,7 @@
 module.exports = function (app) {
   const mongooseClient = app.get('mongooseClient');
   const { Schema } = mongooseClient;
+
   const pokemon = new Schema({
     // The name (mandatory: a single (unique) word between 4 and 24 characters)
     name: {
@@ -30,26 +31,33 @@ module.exports = function (app) {
     },
     // Type(s): a Pokémon has a maximum of two types (see schema definition in #1 )
     types: {
-      required: false,
-      type: [String],
+      required: true,
+      type: [mongooseClient.Schema.Types.ObjectId],
       validate: [
-        val => (val.length <= 2 && val.length > 1),
-        'Uh oh, this Pókemon should have a maximum of two types and at least one type.'
+        val => (val.length > 0 && val.length <= 2),
+        'Uh oh, this Pókemon should have at least one, with a maximum of two types. (e.g. Fire, Poison)'
       ],
     },
     // Weakness(es): a Pokémon has at least one weakness (see schema definition in #1 )
-    weakness: {
-      required: false,
-      type: [String],
+    weaknesses: {
+      required: true,
+      type: [mongooseClient.Schema.Types.ObjectId],
       validate: [
-        val => (val.length <= 2 && val.length > 1),
+        val => (val.length > 0),
         'Uh oh, this Pókemon should have at least one {PATH}. No Pokémon is undefeatable!'
       ],
     },
-    // Evolutions: Pokémon into which it evolves (optional, eg: bellsprout evolves in weepinbell)
-    evolutions: {
+    // Evolutions: Pokémon into which it evolves (optional, eg: bellsprout evolves into weepinbell)
+    evolves_from: {
       required: false,
-      type: String,
+      default: null,
+      type: mongooseClient.Schema.Types.ObjectId,
+    },
+    // Evolutions: Pokémon into which it evolves (optional, eg: bellsprout evolves into weepinbell)
+    evolves_to: {
+      required: false,
+      default: null,
+      type: mongooseClient.Schema.Types.ObjectId,
     },
     // Image
     image: {
@@ -59,6 +67,12 @@ module.exports = function (app) {
     // Favourite
     favourite: {
       required: false,
+      type: Boolean,
+    },
+    // Show - used in frontend
+    show: {
+      required: false,
+      default: false,
       type: Boolean,
     }
   }, {

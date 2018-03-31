@@ -1,11 +1,12 @@
 <template>
   <div>
-    <h1 class="title has-text-primary">
-      Pokédex
-    </h1>
-    <h2 class="subtitle">
-      The ultimate Pokémon manager
-    </h2>
+    <h1 class="title has-text-primary">Pokédex</h1>
+
+    <h2 class="subtitle">The ultimate Pokémon manager</h2>
+
+    <input type="text" class="input is-large" placeholder="Find a Pokémon">
+
+    <hr>
 
     <div class="columns is-multiline">
       <pokemon v-for="pokemon in listPokemon"
