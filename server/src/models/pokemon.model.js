@@ -6,6 +6,10 @@
 module.exports = function (app) {
   const mongooseClient = app.get('mongooseClient');
   const { Schema } = mongooseClient;
+
+  const ObjectId = mongooseClient.Schema.Types.ObjectId;
+
+
   const pokemon = new Schema({
     // The name (mandatory: a single (unique) word between 4 and 24 characters)
     name: {
@@ -31,7 +35,7 @@ module.exports = function (app) {
     // Type(s): a Pokémon has a maximum of two types (see schema definition in #1 )
     types: {
       required: true,
-      type: [String],
+      type: [ObjectId],
       validate: [
         val => (val.length <= 2 && val.length > 1),
         'Uh oh, this Pókemon should have at least one, with a maximum of two types. (e.g. Fire, Poison)'
