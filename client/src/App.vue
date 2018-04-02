@@ -1,5 +1,8 @@
 <template>
   <div id="app">
+
+    <notifications group="foo" />
+
     <div class="container">
 
       <header class="navbar is-fixed-top">
