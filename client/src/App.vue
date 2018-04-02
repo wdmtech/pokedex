@@ -5,7 +5,7 @@
 
     <div class="container">
 
-      <header class="navbar is-fixed-top">
+      <header class="navbar is-dark is-fixed-top">
         <div class="container">
           <div class="navbar-brand">
             <a class="navbar-item">
@@ -20,10 +20,10 @@
           <div id="navbarMenuHeroC" class="navbar-menu">
             <div class="navbar-end">
               <a class="navbar-item is-active">
-                Home
+                Create a Pokémon
               </a>
               <span class="navbar-item">
-                  <a class="button is-primary is-inverted" target="_blank" href="https://github.com/wdmtech/pokedex">
+                  <a class="button is-dark is-inverted is-outlined" target="_blank" href="https://github.com/wdmtech/pokedex">
                     <span class="icon">
                       <i class="fa fa-github"></i>
                     </span>
