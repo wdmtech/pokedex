@@ -10,6 +10,7 @@ module.exports = function (app) {
   const pokemon = new Schema({
     // The name (mandatory: a single (unique) word between 4 and 24 characters)
     name: {
+      // index: 'text',
       required: true,
       type: String,
       unique: true,
@@ -72,12 +73,15 @@ module.exports = function (app) {
     // Show - used in frontend
     show: {
       required: false,
-      default: false,
+      default: true,
       type: Boolean,
     }
   }, {
     timestamps: true
   });
+
+  // Set indexes
+  // pokemon.index({ name: 'text' });
 
   return mongooseClient.model('pokemon', pokemon);
 };

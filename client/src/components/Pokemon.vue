@@ -1,5 +1,5 @@
 <template>
-  <div class="column is-4">
+  <div class="column is-12">
     <div class="card">
       <header class="card-header">
         <p class="card-header-title">
@@ -29,9 +29,23 @@
             <h4 class="subtitle">Types</h4>
 
             <div class="tags">
-            <span class="tag" v-for="type in pokemon.types" :key="type._id" :style="{ 'background-color': type.color, 'color': '#fff' }">
-              #{{ type.name }}
+            <span class="tag" v-for="pokemonType in pokemon.types" :key="pokemonType._id" :style="{ 'background-color': pokemonType.color, 'color': '#fff' }">
+              #{{ pokemonType.name }}
+              <span class="delete" @click="removeType(pokemon, pokemonType)"></span>
             </span>
+
+            <span class="button tag is-info is-outlined" @click="addingType = !addingType">
+              <span v-if="!addingType">Add type&hellip;</span>
+              <span v-if="addingType">Cancel</span>
+            </span>
+
+            <div class="select is-small" v-show="addingType">
+              <select @change="addType">
+                <option value disabled>Choose a type</option>
+                <option v-for="type in listTypes" :value="type._id" :key="type._id">{{ type.name }}</option>
+              </select>
+            </div>
+
             </div>
 
             <hr>
@@ -39,22 +53,45 @@
             <h4 class="subtitle">Weaknesses</h4>
 
             <div class="tags">
-            <span class="tag" v-for="type in pokemon.weaknesses" :key="type._id" :style="{ 'background-color': type.color, 'color': '#fff' }">
-              #{{ type.name }}
+              <span class="tag" v-for="type in pokemon.weaknesses" :key="type._id" :style="{ 'background-color': type.color, 'color': '#fff' }">
+                #{{ type.name }}
+                <span class="delete" @click="removeWeakness(pokemon, type)"></span>
+              </span>
+
+              <span class="button tag is-info is-outlined" @click="addingWeakness = !addingWeakness">
+              <span v-if="!addingWeakness">Add type&hellip;</span>
+              <span v-if="addingWeakness">Cancel</span>
             </span>
+
+              <div class="select is-small" v-show="addingWeakness">
+                <select @change="addWeakness">
+                  <option value disabled>Choose a type</option>
+                  <option v-for="type in listTypes" :value="type._id" :key="type._id">{{ type.name }}</option>
+                </select>
+              </div>
+
             </div>
 
             <hr>
 
             <article class="message">
               <div class="message-body">
-                {{ pokemon.description }}
+                <button class="button is-small is-info is-outlined is-pulled-right" v-if="!editingDescription" @click="startEditingDescription">
+                  Edit
+                </button>
+                <button class="button is-small is-info is-outlined is-pulled-right" v-if="editingDescription" @click="editDescription">
+                  Save
+                </button>
+                <div :contenteditable="editingDescription" ref="pokemonDescription">
+                  {{ pokemon.description }}
+                </div>
               </div>
             </article>
 
             <h4 class="subtitle">Evolutions</h4>
 
             <div class="columns">
+              <!--evolves from-->
               <div class="column is-6">
                 <div v-for="evolvesFrom in pokemon.evolves_from" :key="evolvesFrom._id">
                   <figure>
@@ -65,7 +102,19 @@
                     </figcaption>
                   </figure>
                 </div>
+                <!--edit evolves from-->
+                <div class="has-text-centered">
+                  <button class="button is-small is-info is-outlined" @click="editingEvolutionFrom = true">Edit</button>
+                  <div class="select is-small" v-show="editingEvolutionFrom">
+                    <select @change="updateEvolutionFrom">
+                      <option value disabled>Choose a Pokémon</option>
+                      <option :value="null">None</option>
+                      <option v-for="pokemon in listPokemon" :value="pokemon._id" :key="pokemon._id">{{ pokemon.name }}</option>
+                    </select>
+                  </div>
+                </div>
               </div>
+              <!--evolves to-->
               <div class="column is-6">
                 <div v-for="evolvesTo in pokemon.evolves_to" :key="evolvesTo._id">
                   <figure>
@@ -75,6 +124,17 @@
                       <span class="has-text-primary">To: </span>{{ evolvesTo.name }}
                     </figcaption>
                   </figure>
+                </div>
+                <!--edit evolves to-->
+                <div class="has-text-centered">
+                  <button class="button is-small is-info is-outlined" @click="editingEvolutionTo = true">Edit</button>
+                  <div class="select is-small" v-show="editingEvolutionTo">
+                    <select @change="updateEvolutionTo">
+                      <option value disabled>Choose a Pokémon</option>
+                      <option :value="null">None</option>
+                      <option v-for="pokemon in listPokemon" :value="pokemon._id" :key="pokemon._id">{{ pokemon.name }}</option>
+                    </select>
+                  </div>
                 </div>
               </div>
             </div>
@@ -107,35 +167,169 @@ import { mapActions, mapGetters } from 'vuex'
 export default {
   name: 'pokemon',
   computed: {
-    ...mapGetters('pokemon', { getPokemonFromStore: 'get' }),
-    ...mapGetters('types', { getTypesFromStore: 'get' })
+    // ...mapState(['types']),
+    ...mapGetters('pokemon', {
+      getPokemonFromStore: 'get',
+      listPokemon: 'list'
+    }),
+    ...mapGetters('types', {
+      listTypes: 'list'
+    })
   },
-  mounted () {
+  async created () {
+    await this.findTypes({})
   },
   methods: {
     ...mapActions('pokemon', {
-      // getPokemon: 'get',
       createPokemon: 'create',
       patchPokemon: 'patch',
       removePokemon: 'remove'
     }),
     ...mapActions('types', {
-      getTypes: 'get'
+      findTypes: 'find'
     }),
     async toggleFavourite (e) {
       try {
         let pokemon = await this.getPokemonFromStore(e.target.dataset['id'])
-        await this.patchPokemon([pokemon._id, { favourite: !pokemon.favourite }])
-      } catch (e) {
-        console.error(e)
-      } finally {
+        let result = await this.patchPokemon([pokemon._id, { favourite: !pokemon.favourite }])
         e.target.classList.remove('bounce')
-        window.setTimeout(() => {
-          e.target.classList.add('bounce')
-        }, 50)
-        window.setTimeout(() => {
-          e.target.nextElementSibling.classList.add('rotateOut')
-        }, 0)
+        e.target.classList.remove('shake')
+        if (result.favourite) {
+          this.$notify({
+            group: 'foo',
+            type: 'success',
+            title: 'Wahoo!',
+            text: `${pokemon.name} is one of your new favourite Pokémon!`
+          })
+          window.setTimeout(() => {
+            e.target.classList.add('bounce')
+          }, 50)
+        } else {
+          this.$notify({
+            group: 'foo',
+            type: 'warn',
+            title: `Poor ${pokemon.name}!`,
+            text: `${pokemon.name} is no longer one of your favourites, but don't worry - he understands&hellip; 😭`
+          })
+          window.setTimeout(() => {
+            e.target.classList.add('shake')
+          }, 50)
+        }
+      } catch (e) {
+        this.$notify({
+          group: 'foo',
+          type: 'error',
+          title: `Error`,
+          text: e.message
+        })
+      }
+    },
+    async addType (e) {
+      let newTypeIds = this.pokemon.types.map(type => type._id)
+      newTypeIds.push(e.target.value)
+      try {
+        await this.patchPokemon([ this.pokemon._id, { types: newTypeIds } ])
+      } catch (e) {
+        this.$notify({
+          group: 'foo',
+          type: 'warn',
+          title: 'Error',
+          text: e.message
+        })
+      } finally {
+        this.addingType = false
+      }
+    },
+    async addWeakness (e) {
+      let newTypeIds = this.pokemon.weaknesses.map(type => type._id)
+      newTypeIds.push(e.target.value)
+      try {
+        await this.patchPokemon([ this.pokemon._id, { weaknesses: newTypeIds } ])
+      } catch (e) {
+        this.$notify({
+          group: 'foo',
+          type: 'warn',
+          title: 'Error',
+          text: e.message
+        })
+      } finally {
+        this.addingWeakness = false
+      }
+    },
+    async removeType (pokemon, typeToRemove) {
+      let newTypeIds = pokemon.types.filter(type => type !== typeToRemove).map(type => type._id)
+      try {
+        await this.patchPokemon([ pokemon._id, { types: newTypeIds } ])
+      } catch (e) {
+        this.$notify({
+          group: 'foo',
+          type: 'warn',
+          title: 'Error',
+          text: e.message
+        })
+      }
+    },
+    async removeWeakness (pokemon, typeToRemove) {
+      let newTypeIds = pokemon.weaknesses.filter(type => type !== typeToRemove).map(type => type._id)
+      try {
+        await this.patchPokemon([ pokemon._id, { weaknesses: newTypeIds } ])
+      } catch (e) {
+        this.$notify({
+          group: 'foo',
+          type: 'warn',
+          title: 'Error',
+          text: e.message
+        })
+      }
+    },
+    startEditingDescription () {
+      this.editingDescription = true
+      let descriptionElement = this.$refs.pokemonDescription
+      this.$nextTick(() => {
+        descriptionElement.focus()
+      })
+    },
+    async editDescription () {
+      let descriptionElement = this.$refs.pokemonDescription
+      this.$nextTick(() => {
+        descriptionElement.focus()
+      })
+      try {
+        await this.patchPokemon([ this.pokemon._id, { description: this.$refs.pokemonDescription.innerText } ])
+        this.editingDescription = false
+      } catch (e) {
+        this.$notify({
+          group: 'foo',
+          type: 'warn',
+          title: 'Error',
+          text: e.message
+        })
+      }
+    },
+    async updateEvolutionFrom (e) {
+      try {
+        await this.patchPokemon([ this.pokemon._id, { evolves_from: e.target.value || null } ])
+        this.editingEvolutionFrom = false
+      } catch (e) {
+        this.$notify({
+          group: 'foo',
+          type: 'warn',
+          title: 'Error',
+          text: e.message
+        })
+      }
+    },
+    async updateEvolutionTo (e) {
+      try {
+        await this.patchPokemon([ this.pokemon._id, { evolves_to: e.target.value || null } ])
+        this.editingEvolutionTo = false
+      } catch (e) {
+        this.$notify({
+          group: 'foo',
+          type: 'warn',
+          title: 'Error',
+          text: e.message
+        })
       }
     }
   },
@@ -144,6 +338,11 @@ export default {
   },
   data () {
     return {
+      addingType: false,
+      addingWeakness: false,
+      editingDescription: false,
+      editingEvolutionFrom: false,
+      editingEvolutionTo: false
     }
   }
 }
