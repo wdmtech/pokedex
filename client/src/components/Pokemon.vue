@@ -1,5 +1,5 @@
 <template>
-  <div class="column is-4">
+  <div class="column is-12">
     <div class="card">
       <header class="card-header">
         <p class="card-header-title">
@@ -91,6 +91,7 @@
             <h4 class="subtitle">Evolutions</h4>
 
             <div class="columns">
+              <!--evolves from-->
               <div class="column is-6">
                 <div v-for="evolvesFrom in pokemon.evolves_from" :key="evolvesFrom._id">
                   <figure>
@@ -101,7 +102,19 @@
                     </figcaption>
                   </figure>
                 </div>
+                <!--edit evolves from-->
+                <div class="has-text-centered">
+                  <button class="button is-small is-info is-outlined" @click="editingEvolutionFrom = true">Edit</button>
+                  <div class="select is-small" v-show="editingEvolutionFrom">
+                    <select @change="updateEvolutionFrom">
+                      <option value disabled>Choose a Pokémon</option>
+                      <option :value="null">None</option>
+                      <option v-for="pokemon in listPokemon" :value="pokemon._id" :key="pokemon._id">{{ pokemon.name }}</option>
+                    </select>
+                  </div>
+                </div>
               </div>
+              <!--evolves to-->
               <div class="column is-6">
                 <div v-for="evolvesTo in pokemon.evolves_to" :key="evolvesTo._id">
                   <figure>
@@ -111,6 +124,17 @@
                       <span class="has-text-primary">To: </span>{{ evolvesTo.name }}
                     </figcaption>
                   </figure>
+                </div>
+                <!--edit evolves to-->
+                <div class="has-text-centered">
+                  <button class="button is-small is-info is-outlined" @click="editingEvolutionTo = true">Edit</button>
+                  <div class="select is-small" v-show="editingEvolutionTo">
+                    <select @change="updateEvolutionTo">
+                      <option value disabled>Choose a Pokémon</option>
+                      <option :value="null">None</option>
+                      <option v-for="pokemon in listPokemon" :value="pokemon._id" :key="pokemon._id">{{ pokemon.name }}</option>
+                    </select>
+                  </div>
                 </div>
               </div>
             </div>
@@ -144,7 +168,10 @@ export default {
   name: 'pokemon',
   computed: {
     // ...mapState(['types']),
-    ...mapGetters('pokemon', { getPokemonFromStore: 'get' }),
+    ...mapGetters('pokemon', {
+      getPokemonFromStore: 'get',
+      listPokemon: 'list'
+    }),
     ...mapGetters('types', {
       listTypes: 'list'
     })
@@ -182,7 +209,7 @@ export default {
             group: 'foo',
             type: 'warn',
             title: `Poor ${pokemon.name}!`,
-            text: `${pokemon.name} is no longer one of your favourite Pokémon, but don't worry - he understands&hellip; 😭`
+            text: `${pokemon.name} is no longer one of your favourites, but don't worry - he understands&hellip; 😭`
           })
           window.setTimeout(() => {
             e.target.classList.add('shake')
@@ -278,6 +305,32 @@ export default {
           text: e.message
         })
       }
+    },
+    async updateEvolutionFrom (e) {
+      try {
+        await this.patchPokemon([ this.pokemon._id, { evolves_from: e.target.value || null } ])
+        this.editingEvolutionFrom = false
+      } catch (e) {
+        this.$notify({
+          group: 'foo',
+          type: 'warn',
+          title: 'Error',
+          text: e.message
+        })
+      }
+    },
+    async updateEvolutionTo (e) {
+      try {
+        await this.patchPokemon([ this.pokemon._id, { evolves_to: e.target.value || null } ])
+        this.editingEvolutionTo = false
+      } catch (e) {
+        this.$notify({
+          group: 'foo',
+          type: 'warn',
+          title: 'Error',
+          text: e.message
+        })
+      }
     }
   },
   props: {
@@ -287,7 +340,9 @@ export default {
     return {
       addingType: false,
       addingWeakness: false,
-      editingDescription: false
+      editingDescription: false,
+      editingEvolutionFrom: false,
+      editingEvolutionTo: false
     }
   }
 }
@@ -298,6 +353,5 @@ export default {
     height: 8em;
     overflow: scroll;
   }
-  hr { opacity: .5 }
   hr { opacity: .5 }
 </style>
