@@ -1,5 +1,5 @@
 <template>
-  <div class="column is-3">
+  <div class="column is-4">
     <div class="card">
       <header class="card-header">
         <p class="card-header-title">
@@ -7,8 +7,8 @@
           {{ pokemon.name }} <span class="icon has-text-warning" v-if="pokemon.favourite"><i class="fa fa-star"></i></span>
         </p>
         <a href="#" class="card-header-icon" aria-label="more options">
-      <span class="icon">
-        <i class="fa fa-angle-down" aria-hidden="true" @click="pokemon.show = !pokemon.show"></i>
+      <span class="icon" @click="pokemon.show = !pokemon.show">
+        <i class="fa fa-angle-down" aria-hidden="true" ></i>
       </span>
         </a>
       </header>
@@ -23,7 +23,6 @@
           </div>
 
           <div v-if="pokemon.show">
-
 
             <hr>
 
