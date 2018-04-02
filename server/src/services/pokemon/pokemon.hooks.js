@@ -1,4 +1,5 @@
 const { fastJoin } = require('feathers-hooks-common');
+const searchRegex = require('../../hooks/search-regex');
 
 const pokemonTypesResolver = {
   joins: {
@@ -62,7 +63,10 @@ const query = {
 
 module.exports = {
   before: {
-    all: [],
+    all: [
+      // Custom hook to do a case-insensitive fuzz-search on 'name' attributes using Regex
+      searchRegex()
+    ],
     find: [],
     get: [],
     create: [],
