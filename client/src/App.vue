@@ -3,7 +3,7 @@
     <section class="hero is-fullheight">
       <!-- Hero head: will stick at the top -->
       <div class="hero-head">
-        <header class="navbar">
+        <header class="navbar is-fixed-top">
           <div class="container">
             <div class="navbar-brand">
               <a class="navbar-item">
@@ -43,9 +43,11 @@
 
       <!-- Hero footer: will stick at the bottom -->
       <div class="hero-foot">
-        <nav class="tabs is-boxed is-fullwidth">
+        <nav class="navbar is-fixed-bottom tabs is-toggle is-toggle-rounded is-fullwidth">
           <div class="container">
             <ul>
+              <li class="is-active" style="background-color: #fff"><a>All</a></li>
+              <li style="background-color: #fff"><a>Favourites</a></li>
             </ul>
           </div>
         </nav>
