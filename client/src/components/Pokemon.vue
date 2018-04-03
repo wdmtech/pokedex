@@ -64,7 +64,7 @@
                 </button>
               </div>
               <div :contenteditable="editingDescription || !pokemon._id"
-                   :style="{ 'background-color': editingName && !pokemon._id ? '#cccccc' : '' }"
+                   :style="{ 'background-color': (editingName && !pokemon._id) || editingDescription ? '#cccccc' : '' }"
                    ref="pokemonDescription">
                 {{ pokemon.description }}
               </div>

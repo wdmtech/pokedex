@@ -4,6 +4,14 @@
 
     <h2 class="subtitle">The ultimate Pokémon manager</h2>
 
+    <div class="field">
+      <p class="control">
+        <a class="button is-info is-large is-right" @click="addNewPokemon">
+          Create a Pokémon
+        </a>
+      </p>
+    </div>
+
     <div class="field has-addons">
       <p class="control is-expanded">
         <input type="text"
@@ -12,14 +20,15 @@
                v-model="searchQuery">
       </p>
       <p class="control">
-        <a class="button is-primary is-large" @click="includeFavourites = !includeFavourites">
-          {{ includeFavourites ? 'Including' : 'Hiding' }} favourites
+        <a class="button is-primary is-large" @click="showFavourites = !showFavourites">
+          {{ showFavourites ? 'Show all' : 'Show favourites' }}
         </a>
       </p>
+
     </div>
 
     <div class="columns is-multiline">
-      <pokemon :pokemon="newPokemon" v-if="newPokemon" @created="newPokemon = null"></pokemon>
+      <pokemon :pokemon="newPokemon" v-if="newPokemon" @created="newPokemon = null" class="animated bounceIn"></pokemon>
       <pokemon v-for="pokemon in listPokemon"
                :pokemon="pokemon"
                :key="pokemon._id">
@@ -36,7 +45,7 @@ export default {
   name: 'Pokedex',
   components: { Pokemon },
   watch: {
-    includeFavourites () {
+    showFavourites () {
       this.filter(this.searchQuery)
     },
     searchQuery () {
@@ -65,7 +74,22 @@ export default {
       findTypes: 'find'
     }),
     addNewPokemon () {
-      this.newPokemon = {}
+      this.newPokemon = {
+        name: 'Unnamed Pokémon',
+        description: '',
+        image: 'https://via.placeholder.com/475x475?text=?',
+        types: [
+          this.listTypes[0]._id,
+          this.listTypes[1]._id
+        ],
+        weaknesses: [
+          this.listTypes[0]._id,
+          this.listTypes[1]._id
+        ],
+        evolves_from: null,
+        evolves_to: null,
+        show: false
+      }
     },
     async filter () {
       this.$store.commit('pokemon/clearAll')
@@ -74,15 +98,11 @@ export default {
           $search: [this.searchQuery || '']
         }
       }
-      if (this.includeFavourites) {
-        query.$or = [
-          { favourite: true },
-          { favourite: false }
-        ]
-      } else {
-        query.favourite = false
+      if (this.showFavourites) {
+        query.favourite = {
+          $in: [true, false]
+        }
       }
-      console.log(query)
       await this.findPokemon({ query })
     }
   },
@@ -93,29 +113,12 @@ export default {
         name: {
           $search: ['']
         }}})
-
-    this.newPokemon = {
-      name: 'Unnamed Pokémon',
-      description: '',
-      image: 'https://via.placeholder.com/475x475?text=?',
-      types: [
-        this.listTypes[0]._id,
-        this.listTypes[1]._id
-      ],
-      weaknesses: [
-        this.listTypes[0]._id,
-        this.listTypes[1]._id
-      ],
-      evolves_from: null,
-      evolves_to: null,
-      show: false
-    }
   },
   data () {
     return {
       searchQuery: '',
       filteredPokemon: [],
-      includeFavourites: true,
+      showFavourites: false,
       newPokemon: null
     }
   }
