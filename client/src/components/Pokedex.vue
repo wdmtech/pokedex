@@ -19,6 +19,7 @@
     </div>
 
     <div class="columns is-multiline">
+      <pokemon :pokemon="newPokemon" v-if="newPokemon" @created="newPokemon = null"></pokemon>
       <pokemon v-for="pokemon in listPokemon"
                :pokemon="pokemon"
                :key="pokemon._id">
@@ -48,6 +49,9 @@ export default {
       findPokemonInStore: 'find',
       listPokemon: 'list',
       currentPokemon: 'current'
+    }),
+    ...mapGetters('types', {
+      listTypes: 'list'
     })
   },
   methods: {
@@ -57,6 +61,12 @@ export default {
       patchPokemon: 'patch',
       removePokemon: 'remove'
     }),
+    ...mapActions('types', {
+      findTypes: 'find'
+    }),
+    addNewPokemon () {
+      this.newPokemon = {}
+    },
     async filter () {
       this.$store.commit('pokemon/clearAll')
       let query = {
@@ -77,17 +87,36 @@ export default {
     }
   },
   async created () {
+    await this.findTypes({})
     await this.findPokemon({
       query: {
         name: {
           $search: ['']
         }}})
+
+    this.newPokemon = {
+      name: 'Unnamed Pokémon',
+      description: '',
+      image: 'https://via.placeholder.com/475x475?text=?',
+      types: [
+        this.listTypes[0]._id,
+        this.listTypes[1]._id
+      ],
+      weaknesses: [
+        this.listTypes[0]._id,
+        this.listTypes[1]._id
+      ],
+      evolves_from: null,
+      evolves_to: null,
+      show: false
+    }
   },
   data () {
     return {
       searchQuery: '',
       filteredPokemon: [],
-      includeFavourites: true
+      includeFavourites: true,
+      newPokemon: null
     }
   }
 }
