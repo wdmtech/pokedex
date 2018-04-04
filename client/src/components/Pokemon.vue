@@ -1,20 +1,43 @@
 <template>
-  <div class="column is-12">
+  <div class="column is-4">
     <div class="card">
       <header class="card-header">
         <p class="card-header-title">
           <!-- todo add tooltips -->
-          {{ pokemon.name }} <span class="icon has-text-warning" v-if="pokemon.favourite"><i class="fa fa-star"></i></span>
+
+          <!--pokemon name - editable-->
+          <span ref="pokemonName"
+                :contenteditable="editingName"
+                :style="{ 'background-color': editingName ? '#cccccc' : '' }">
+            {{ pokemon.name }}
+          </span>&nbsp;
+
+          <!--pokemon name - edit/save button-->
+          <span class="tag button is-small is-info is-outlined" @click="startEditingName">
+            <span v-if="!editingName">Edit</span>
+            <span v-if="editingName" @click="editName">Save</span>
+          </span>
+
+          <!--pokemon - favourite indicator (star)-->
+          <span class="icon has-text-warning" v-if="pokemon.favourite"><i class="fa fa-star"></i></span>
+
         </p>
-        <a href="#" class="card-header-icon" aria-label="more options">
-      <span class="icon" @click="pokemon.show = !pokemon.show">
-        <i class="fa fa-angle-down" aria-hidden="true" ></i>
-      </span>
+
+        <!--pokemon 'show more' button - only show when pokemon has an _id-->
+        <a href="#"
+           class="card-header-icon"
+           aria-label="more options"
+           v-if="pokemon._id"
+           @click="pokemon.show = !pokemon.show">
+          <span class="icon" >
+            <i class="fa fa-angle-down" aria-hidden="true" ></i>
+          </span>
         </a>
       </header>
       <div class="card-content">
         <div class="content">
 
+          <!--pokemon image-->
           <div style="position: relative">
             <figure class="image">
               <img :src="pokemon.image" alt class="pointer animated" @click="toggleFavourite" :data-id="pokemon._id">
@@ -22,10 +45,38 @@
             </figure>
           </div>
 
+          <h6>Description</h6>
+
+          <!--description and description editing-->
+          <article class="message">
+            <div class="message-body">
+              <!--only show if this pokemon has a _id-->
+              <div v-if="pokemon._id">
+                <button class="button is-small is-info is-outlined is-pulled-right"
+                        v-if="!editingDescription"
+                        @click="startEditingDescription">
+                  Edit
+                </button>
+                <button class="button is-small is-info is-outlined is-pulled-right"
+                        v-if="editingDescription"
+                        @click="editDescription">
+                  Save
+                </button>
+              </div>
+              <div :contenteditable="editingDescription || !pokemon._id"
+                   :style="{ 'background-color': (editingName && !pokemon._id) || editingDescription ? '#cccccc' : '' }"
+                   ref="pokemonDescription">
+                {{ pokemon.description }}
+              </div>
+            </div>
+          </article>
+
+          <!--only show if pokemon.show === true-->
           <div v-if="pokemon.show">
 
             <hr>
 
+            <!--pokemon types-->
             <h4 class="subtitle">Types</h4>
 
             <div class="tags">
@@ -34,11 +85,13 @@
               <span class="delete" @click="removeType(pokemon, pokemonType)"></span>
             </span>
 
+            <!--pokemon types - edit/cancel button-->
             <span class="button tag is-info is-outlined" @click="addingType = !addingType">
               <span v-if="!addingType">Add type&hellip;</span>
               <span v-if="addingType">Cancel</span>
             </span>
 
+            <!--pokemon types - choose a type-->
             <div class="select is-small" v-show="addingType">
               <select @change="addType">
                 <option value disabled>Choose a type</option>
@@ -52,17 +105,20 @@
 
             <h4 class="subtitle">Weaknesses</h4>
 
+            <!--pokemon weaknesses-->
             <div class="tags">
               <span class="tag" v-for="type in pokemon.weaknesses" :key="type._id" :style="{ 'background-color': type.color, 'color': '#fff' }">
                 #{{ type.name }}
                 <span class="delete" @click="removeWeakness(pokemon, type)"></span>
               </span>
 
+                <!--pokemon weaknesses - edit/cancel button-->
               <span class="button tag is-info is-outlined" @click="addingWeakness = !addingWeakness">
-              <span v-if="!addingWeakness">Add type&hellip;</span>
-              <span v-if="addingWeakness">Cancel</span>
-            </span>
+                <span v-if="!addingWeakness">Add type&hellip;</span>
+                <span v-if="addingWeakness">Cancel</span>
+              </span>
 
+              <!--pokemon weaknesses - choose a type-->
               <div class="select is-small" v-show="addingWeakness">
                 <select @change="addWeakness">
                   <option value disabled>Choose a type</option>
@@ -74,25 +130,22 @@
 
             <hr>
 
-            <article class="message">
-              <div class="message-body">
-                <button class="button is-small is-info is-outlined is-pulled-right" v-if="!editingDescription" @click="startEditingDescription">
-                  Edit
-                </button>
-                <button class="button is-small is-info is-outlined is-pulled-right" v-if="editingDescription" @click="editDescription">
-                  Save
-                </button>
-                <div :contenteditable="editingDescription" ref="pokemonDescription">
-                  {{ pokemon.description }}
-                </div>
-              </div>
-            </article>
-
             <h4 class="subtitle">Evolutions</h4>
 
-            <div class="columns">
+            <div class="columns is-mobile">
               <!--evolves from-->
               <div class="column is-6">
+                <!--edit evolves from-->
+                <div class="has-text-centered">
+                  <button class="button is-small is-info is-outlined" @click="editingEvolutionFrom = true">Edit</button>
+                  <div class="select is-small" v-show="editingEvolutionFrom">
+                    <select @change="updateEvolutionFrom">
+                      <option value disabled>Choose a Pokémon</option>
+                      <option :value="null">None</option>
+                      <option v-for="evolution in listPokemon" :value="evolution._id" :key="evolution._id">{{ evolution.name }}</option>
+                    </select>
+                  </div>
+                </div>
                 <div v-for="evolvesFrom in pokemon.evolves_from" :key="evolvesFrom._id">
                   <figure>
                     <img :src="evolvesFrom.image" v-if="evolvesFrom.image">
@@ -102,29 +155,9 @@
                     </figcaption>
                   </figure>
                 </div>
-                <!--edit evolves from-->
-                <div class="has-text-centered">
-                  <button class="button is-small is-info is-outlined" @click="editingEvolutionFrom = true">Edit</button>
-                  <div class="select is-small" v-show="editingEvolutionFrom">
-                    <select @change="updateEvolutionFrom">
-                      <option value disabled>Choose a Pokémon</option>
-                      <option :value="null">None</option>
-                      <option v-for="pokemon in listPokemon" :value="pokemon._id" :key="pokemon._id">{{ pokemon.name }}</option>
-                    </select>
-                  </div>
-                </div>
               </div>
               <!--evolves to-->
               <div class="column is-6">
-                <div v-for="evolvesTo in pokemon.evolves_to" :key="evolvesTo._id">
-                  <figure>
-                    <img :src="evolvesTo.image" v-if="evolvesTo.image">
-                    <div v-else>Nothing</div>
-                    <figcaption>
-                      <span class="has-text-primary">To: </span>{{ evolvesTo.name }}
-                    </figcaption>
-                  </figure>
-                </div>
                 <!--edit evolves to-->
                 <div class="has-text-centered">
                   <button class="button is-small is-info is-outlined" @click="editingEvolutionTo = true">Edit</button>
@@ -132,31 +165,27 @@
                     <select @change="updateEvolutionTo">
                       <option value disabled>Choose a Pokémon</option>
                       <option :value="null">None</option>
-                      <option v-for="pokemon in listPokemon" :value="pokemon._id" :key="pokemon._id">{{ pokemon.name }}</option>
+                      <option v-for="evolution in listPokemon" :value="evolution._id" :key="evolution._id">{{ evolution.name }}</option>
                     </select>
                   </div>
                 </div>
+                <div v-for="evolvesTo in pokemon.evolves_to" :key="evolvesTo._id">
+                  <figure>
+                    <img :src="evolvesTo.image" v-if="evolvesTo.image">
+                    <img src="https://placeholder.com/475/475" v-else>
+                    <figcaption>
+                      <span class="has-text-primary">To: </span>{{ evolvesTo.name }}
+                    </figcaption>
+                  </figure>
+                </div>
               </div>
             </div>
-
-            <!--<div class="muted">
-              <small>
-                <time datetime="2016-1-1">Added {{ pokemon.createdAt }}</time>
-              </small>
-              <br>
-              <small>
-                <time datetime="2016-1-1">Updated {{ pokemon.updatedAt }}</time>
-              </small>
-            </div>-->
-
           </div>
-
         </div>
       </div>
-      <footer class="card-footer">
-        <a href="#" class="card-footer-item">Save</a>
-        <a href="#" class="card-footer-item">Edit</a>
-        <a href="#" class="card-footer-item">Delete</a>
+      <!--pokemon - delete button-->
+      <footer class="card-footer" v-if="pokemon._id">
+        <a href="#" class="card-footer-item has-text-danger" @click="removePokemon(pokemon._id)">Delete {{ pokemon.name }}</a>
       </footer>
     </div>
   </div>
@@ -282,20 +311,56 @@ export default {
         })
       }
     },
+    startEditingName () {
+      this.editingName = true
+      let element = this.$refs.pokemonName
+      this.$nextTick(() => {
+        element.focus()
+      })
+    },
+    async editName () {
+      let element = this.$refs.pokemonName.innerText
+      this.$nextTick(() => {
+        element.focus()
+      })
+      try {
+        if (this.pokemon._id) {
+          await this.patchPokemon([ this.pokemon._id, { name: element.innerText } ])
+        } else {
+          // Create a brand new Pokémon (mix in the name and description properties)
+          await this.createPokemon({
+            ...this.pokemon,
+            name: this.$refs.pokemonName.innerText,
+            description: this.$refs.pokemonDescription.innerText,
+            show: true
+          })
+          // send event to Pokedex to indicate the pokemon was created
+          this.$emit('created')
+        }
+        this.editingName = false
+      } catch (e) {
+        this.$notify({
+          group: 'foo',
+          type: 'warn',
+          title: 'Error',
+          text: e.message
+        })
+      }
+    },
     startEditingDescription () {
       this.editingDescription = true
-      let descriptionElement = this.$refs.pokemonDescription
+      let element = this.$refs.pokemonDescription
       this.$nextTick(() => {
-        descriptionElement.focus()
+        element.focus()
       })
     },
     async editDescription () {
-      let descriptionElement = this.$refs.pokemonDescription
+      let element = this.$refs.pokemonDescription
       this.$nextTick(() => {
-        descriptionElement.focus()
+        element.focus()
       })
       try {
-        await this.patchPokemon([ this.pokemon._id, { description: this.$refs.pokemonDescription.innerText } ])
+        await this.patchPokemon([ this.pokemon._id, { description: element.innerText } ])
         this.editingDescription = false
       } catch (e) {
         this.$notify({
@@ -340,6 +405,7 @@ export default {
     return {
       addingType: false,
       addingWeakness: false,
+      editingName: false,
       editingDescription: false,
       editingEvolutionFrom: false,
       editingEvolutionTo: false
