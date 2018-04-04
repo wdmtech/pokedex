@@ -71,7 +71,6 @@
             </div>
           </article>
 
-
           <!--only show if pokemon.show === true-->
           <div v-if="pokemon.show">
 
