@@ -40,7 +40,7 @@
           <!--pokemon image-->
           <div style="position: relative">
             <figure class="image">
-              <img :src="pokemon.image" alt class="animated" :class="{ pointer: pokemon._id }" @click="pokemon._id ? toggleFavourite : null" :data-id="pokemon._id">
+              <img :src="pokemon.image" alt class="animated" :class="{ pointer: pokemon._id }" @click="toggleFavourite" :data-id="pokemon._id">
               <!--<img v-show="pokemon.favourite" style="position: absolute" @click="toggleFavourite" :data-id="pokemon._id" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 31.201 29.676'><polygon points='15.602,0 19.325,11.279 31.2,11.332 21.624,18.36 25.243,29.676 15.602,22.738 5.96,29.676 9.577,18.36 0,11.332 11.878,11.279' fill='#f3ef07' /></svg>" alt class="animated rotateIn">-->
             </figure>
           </div>
@@ -219,39 +219,41 @@ export default {
       findTypes: 'find'
     }),
     async toggleFavourite (e) {
-      try {
-        let pokemon = await this.getPokemonFromStore(e.target.dataset['id'])
-        let result = await this.patchPokemon([pokemon._id, { favourite: !pokemon.favourite }])
-        e.target.classList.remove('bounce')
-        e.target.classList.remove('shake')
-        if (result.favourite) {
+      if (this.pokemon._id) {
+        try {
+          let pokemon = await this.getPokemonFromStore(e.target.dataset['id'])
+          let result = await this.patchPokemon([pokemon._id, { favourite: !pokemon.favourite }])
+          e.target.classList.remove('bounce')
+          e.target.classList.remove('shake')
+          if (result.favourite) {
+            this.$notify({
+              group: 'foo',
+              type: 'success',
+              title: 'Wahoo!',
+              text: `${pokemon.name} is one of your new favourite Pokémon!`
+            })
+            window.setTimeout(() => {
+              e.target.classList.add('bounce')
+            }, 50)
+          } else {
+            this.$notify({
+              group: 'foo',
+              type: 'warn',
+              title: `Poor ${pokemon.name}!`,
+              text: `${pokemon.name} is no longer one of your favourites, but don't worry - he understands&hellip; 😭`
+            })
+            window.setTimeout(() => {
+              e.target.classList.add('shake')
+            }, 50)
+          }
+        } catch (e) {
           this.$notify({
             group: 'foo',
-            type: 'success',
-            title: 'Wahoo!',
-            text: `${pokemon.name} is one of your new favourite Pokémon!`
+            type: 'error',
+            title: `Error`,
+            text: e.message
           })
-          window.setTimeout(() => {
-            e.target.classList.add('bounce')
-          }, 50)
-        } else {
-          this.$notify({
-            group: 'foo',
-            type: 'warn',
-            title: `Poor ${pokemon.name}!`,
-            text: `${pokemon.name} is no longer one of your favourites, but don't worry - he understands&hellip; 😭`
-          })
-          window.setTimeout(() => {
-            e.target.classList.add('shake')
-          }, 50)
         }
-      } catch (e) {
-        this.$notify({
-          group: 'foo',
-          type: 'error',
-          title: `Error`,
-          text: e.message
-        })
       }
     },
     async addType (e) {
