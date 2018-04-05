@@ -21,14 +21,18 @@
       </p>
       <p class="control">
         <a class="button is-primary is-large" @click="showFavourites = !showFavourites">
-          {{ showFavourites ? 'Show all' : 'Show favourites' }}
+          {{ showFavourites ? 'Showing favourites' : 'Showing all' }}
         </a>
       </p>
 
     </div>
 
     <div class="columns is-multiline">
-      <pokemon :pokemon="newPokemon" v-if="newPokemon" @created="newPokemon = null" class="animated bounceIn"></pokemon>
+      <pokemon :pokemon="newPokemon"
+               v-if="newPokemon"
+               @created="newPokemon = null"
+               @cancel="newPokemon = null"
+               class="animated bounceIn"></pokemon>
       <pokemon v-for="pokemon in listPokemon"
                :pokemon="pokemon"
                :key="pokemon._id">
@@ -96,6 +100,9 @@ export default {
       let query = {
         name: {
           $search: [this.searchQuery || '']
+        },
+        $sort: {
+          name: 1
         }
       }
       if (this.showFavourites) {
@@ -112,7 +119,12 @@ export default {
       query: {
         name: {
           $search: ['']
-        }}})
+        },
+        $sort: {
+          name: 1
+        }
+      }
+    })
   },
   data () {
     return {
