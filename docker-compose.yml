@@ -6,6 +6,8 @@ services:
     expose:
       - "27017"
       - "37017"
+    ports:
+      - "27017:27017"
     command: --smallfiles
 
   server:
