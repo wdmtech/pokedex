@@ -11,6 +11,8 @@ A full-stack Pokédex implementation, using
 
 # Prerequisites
 
+Docker, or:
+
 [Node.js](https://nodejs.org/en/download/) > 8.11.* 
 
 [MongoDB](https://www.mongodb.com/download-center#community) 3.6.*
