@@ -65,13 +65,32 @@ module.exports = {
   before: {
     all: [
       // Custom hook to do a case-insensitive fuzz-search on 'name' attributes using Regex
-      searchRegex()
+      searchRegex(),
     ],
     find: [],
     get: [],
     create: [],
     update: [],
-    patch: [],
+    patch: [
+      // Prevent the user from having more than 10 favourite Pokémon
+      async context => {
+        if (context.data.favourite) {
+          let favouriteLimit = 10
+          let result
+          try {
+            result = await context.app.service('pokemon').find({ query: { favourite: true } })
+          } catch (e) {
+            console.error(e)
+          }
+
+          if (result.length >= favouriteLimit) {
+            throw new Error('You already have the maximum of 3 favourite Pokémon')
+          }
+        }
+
+        return context
+      }
+    ],
     remove: []
   },
 
