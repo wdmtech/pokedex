@@ -40,7 +40,7 @@
           <!--pokemon image-->
           <div style="position: relative">
             <figure class="image">
-              <img :src="pokemon.image" alt class="pointer animated" @click="toggleFavourite" :data-id="pokemon._id">
+              <img :src="pokemon.image" alt class="animated" :class="{ pointer: pokemon._id }" @click="pokemon._id ? toggleFavourite : null" :data-id="pokemon._id">
               <!--<img v-show="pokemon.favourite" style="position: absolute" @click="toggleFavourite" :data-id="pokemon._id" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 31.201 29.676'><polygon points='15.602,0 19.325,11.279 31.2,11.332 21.624,18.36 25.243,29.676 15.602,22.738 5.96,29.676 9.577,18.36 0,11.332 11.878,11.279' fill='#f3ef07' /></svg>" alt class="animated rotateIn">-->
             </figure>
           </div>
@@ -184,8 +184,9 @@
         </div>
       </div>
       <!--pokemon - delete button-->
-      <footer class="card-footer" v-if="pokemon._id">
-        <a href="#" class="card-footer-item has-text-danger" @click="removePokemon(pokemon._id)">Delete {{ pokemon.name }}</a>
+      <footer class="card-footer">
+        <a href="#" class="card-footer-item has-text-danger" @click="removePokemon(pokemon._id)" v-if="pokemon._id">Delete {{ pokemon.name }}</a>
+        <a href="#" class="card-footer-item" @click="$emit('cancel')" v-if="!pokemon._id">Cancel</a>
       </footer>
     </div>
   </div>
@@ -328,7 +329,7 @@ export default {
           await this.patchPokemon([ this.pokemon._id, { name: element.innerText } ])
         } else {
           // Create a brand new Pokémon (mix in the name and description properties)
-          await this.createPokemon({
+          let newPokemon = await this.createPokemon({
             ...this.pokemon,
             name: this.$refs.pokemonName.innerText,
             description: this.$refs.pokemonDescription.innerText,
@@ -336,6 +337,13 @@ export default {
           })
           // send event to Pokedex to indicate the pokemon was created
           this.$emit('created')
+          // notify the user that their Pokémon was created!
+          this.$notify({
+            group: 'foo',
+            type: 'success',
+            title: 'A brand-new Pokémon!',
+            text: `You have released <strong>${newPokemon.name}</strong> into the wild!`
+          })
         }
         this.editingName = false
       } catch (e) {
