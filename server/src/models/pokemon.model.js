@@ -36,7 +36,7 @@ module.exports = function (app) {
       type: [mongooseClient.Schema.Types.ObjectId],
       validate: [
         val => (val.length > 0 && val.length <= 2),
-        'Uh oh, this Pókemon should have at least one, with a maximum of two types. (e.g. Fire, Poison)'
+        'Uh oh, this Pókemon should have at least one, and a maximum of two types. (e.g. Fire, Poison)'
       ],
     },
     // Weakness(es): a Pokémon has at least one weakness (see schema definition in #1 )
