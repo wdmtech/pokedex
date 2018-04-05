@@ -19,9 +19,6 @@
           </div>
           <div id="navbarMenuHeroC" class="navbar-menu">
             <div class="navbar-end">
-              <a class="navbar-item is-active">
-                Create a Pokémon
-              </a>
               <span class="navbar-item">
                   <a class="button is-dark is-inverted is-outlined" target="_blank" href="https://github.com/wdmtech/pokedex">
                     <span class="icon">
