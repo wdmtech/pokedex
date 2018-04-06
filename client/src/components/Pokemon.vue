@@ -24,8 +24,7 @@
         </p>
 
         <!--pokemon 'show more' button - only show when pokemon has an _id-->
-        <a href="#"
-           class="card-header-icon"
+        <a class="card-header-icon"
            aria-label="more options"
            v-if="pokemon._id"
            @click="pokemon.show = !pokemon.show">
