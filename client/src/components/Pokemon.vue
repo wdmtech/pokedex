@@ -28,8 +28,8 @@
            aria-label="more options"
            v-if="pokemon._id"
            @click="pokemon.show = !pokemon.show">
-          <span class="icon" >
-            <i class="fa fa-angle-down" aria-hidden="true" ></i>
+          <span class="icon">
+            <i class="fa" :class="{ 'fa-angle-right': pokemon.show, 'fa-angle-up': !pokemon.show }" aria-hidden="true" ></i>
           </span>
         </a>
       </header>
