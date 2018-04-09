@@ -32,7 +32,7 @@ const webpackConfig = merge(baseWebpackConfig, {
     new webpack.DefinePlugin({
       'process.env': env
     }),
-    new UglifyJsPlugin({
+    /*new UglifyJsPlugin({
       uglifyOptions: {
         compress: {
           warnings: false
@@ -40,7 +40,7 @@ const webpackConfig = merge(baseWebpackConfig, {
       },
       sourceMap: config.build.productionSourceMap,
       parallel: true
-    }),
+    }),*/
     // extract css into its own file
     new ExtractTextPlugin({
       filename: utils.assetsPath('css/[name].[contenthash].css'),
@@ -113,6 +113,15 @@ const webpackConfig = merge(baseWebpackConfig, {
       {
         from: path.resolve(__dirname, '../static'),
         to: config.build.assetsSubDirectory,
+        ignore: ['.*']
+      }
+    ]),
+
+    // copy now.json to dist directory for easier deployments using now.sh
+    new CopyWebpackPlugin([
+      {
+        from: path.resolve(__dirname, '../now.json'),
+        to: config.build.assetsRoot,
         ignore: ['.*']
       }
     ])
