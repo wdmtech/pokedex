@@ -25,7 +25,8 @@
     "test": "yarn run eslint && yarn run mocha",
     "eslint": "eslint src/. test/. --config .eslintrc.json",
     "start": "node src/",
-    "mocha": "mocha test/ --recursive --exit"
+    "mocha": "mocha test/ --recursive --exit",
+    "deploy": "now --npm && now alias"
   },
   "dependencies": {
     "@feathersjs/configuration": "^1.0.2",
@@ -39,6 +40,7 @@
     "feathers-mongoose": "^6.1.0",
     "helmet": "^3.12.0",
     "mongoose": "^5.0.12",
+    "node-schedule": "^1.3.0",
     "serve-favicon": "^2.4.5",
     "winston": "^2.4.1"
   },

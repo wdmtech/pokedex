@@ -84,7 +84,7 @@ module.exports = {
           }
 
           if (result.length >= favouriteLimit) {
-            throw new Error('You already have the maximum of 3 favourite Pokémon')
+            throw new Error(`You already have the maximum of ${favouriteLimit} favourite Pokémon`)
           }
         }
 
