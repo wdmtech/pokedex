@@ -7,7 +7,7 @@ import config from './config'
 const socket = io(config.connection, { transports: ['websocket'] })
 
 const feathersClient = feathers()
-  .configure(socketio(socket))
+  .configure(socketio(socket), { timeout: 30000 })
   .configure(auth({ storage: window.localStorage }))
 
 export default feathersClient
